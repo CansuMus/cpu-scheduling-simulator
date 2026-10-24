@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive, offline-first CPU scheduling simulator for FCFS, SJF, SRTF and Round Robin algorithms.">
+  <title>CPU Scheduling Lab | CSE513 Assignment 1</title>
+  <style>
+:root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#172941;background:#f4f7fc;font-synthesis:none;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #93bdff;outline-offset:2px}button:disabled{cursor:not-allowed;opacity:.5}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.app-shell{display:grid;grid-template-columns:274px minmax(0,1fr);min-height:100vh}.sidebar{background:linear-gradient(155deg,#071935 0%,#102a54 68%,#06152c 100%);color:#e8f1ff;padding:32px 25px;display:flex;flex-direction:column;gap:40px}.brand{font-size:20px;font-weight:900;letter-spacing:2px;display:flex;align-items:center;gap:12px}.brand-symbol{font-size:27px;background:#1c77eb;border:1px solid #4398ff;border-radius:11px;padding:3px 8px;line-height:1}.brand-highlight{color:#42adff}.sidebar-main{flex:1}.sidebar-badge{font-size:10px;font-weight:700;letter-spacing:2px;color:#83baff;margin-bottom:24px}.sidebar h1{font-size:39px;line-height:1.09;letter-spacing:-1.9px;margin:0 0 19px}.sidebar h1 span{color:#6db7ff}.sidebar-description{font-size:13px;line-height:1.8;color:#b6c6de}.sidebar-divider{height:1px;background:#39516e;margin:37px 0 28px}.sidebar-section{font-size:10px;letter-spacing:1.6px;font-weight:800;color:#8ba8cb;margin-bottom:22px}.policy-list{list-style:none;padding:0;margin:0;display:grid;gap:19px;color:#d4e3f8;font-size:12px}.policy-list li{display:flex;align-items:center;gap:11px}.policy-dot{width:10px;height:10px;border-radius:50%;flex:none}.d-blue{background:#49a0ff}.d-green{background:#35d5ac}.d-purple{background:#ab9aff}.d-orange{background:#ffab66}.tip{border:1px solid #345076;background:#172f54;border-radius:14px;margin-top:52px;padding:17px;display:grid;gap:8px}.tip strong{font-size:12px}.tip span{font-size:12px;line-height:1.65;color:#c9d8ec}.sidebar-foot{font-size:10px;line-height:1.9;color:#8ba6c7}
+.workspace{min-width:0;max-width:1560px;width:100%;padding:34px clamp(18px,4vw,61px) 25px;margin:auto}.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:30px}.eyebrow,.section-index{font-size:10px;font-weight:800;letter-spacing:1.8px;color:#4280cd}.topbar h2{font-size:29px;letter-spacing:-.8px;margin:7px 0 5px}.muted{color:#77899f;font-size:13px;line-height:1.6;margin:0}.top-pill{border:1px solid #dbe5ef;border-radius:30px;background:white;color:#536781;padding:11px 15px;font-size:11px;white-space:nowrap;font-weight:600;box-shadow:0 3px 12px #1f407008}.online-dot{display:inline-block;height:7px;width:7px;margin-right:7px;background:#0cbe85;border-radius:100%}
+.config-layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(285px,.88fr);gap:20px;align-items:stretch}.panel{background:white;border:1px solid #e5ebf2;border-radius:16px;box-shadow:0 8px 26px #24456f09;padding:24px;min-width:0}.panel-heading,.results-title{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.panel-heading h3,.results-title h3{font-size:19px;letter-spacing:-.4px;margin:8px 0 0}.panel-heading h4{font-size:16px;margin:0 0 6px;letter-spacing:-.2px}.small-tag{font-size:10px;font-weight:700;white-space:nowrap;border-radius:30px;background:#f0f5fb;color:#54708d;padding:8px 11px}.preset-toolbar{margin:27px 0 15px;display:grid;gap:9px}.preset-toolbar label,.quantum-row label{font-size:12px;font-weight:750}.preset-controls{display:flex;gap:10px}.preset-controls select{min-width:0;flex:1;border:1px solid #dbe4ed;background:#f9fbfe;border-radius:9px;padding:10px;color:#283c56;font-size:12px}.btn{border:none;border-radius:9px;font-size:12px;font-weight:750;transition:transform .12s,background-color .12s;white-space:nowrap}.btn:active{transform:translateY(1px)}.btn-outline{border:1px solid #d5e2f0;background:white;color:#275788;padding:10px 17px}.btn-outline:hover{background:#eff6fe}.btn-subtle{color:#176bba;background:#eef6ff;padding:11px 13px}.btn-subtle:hover{background:#dfedff}.text-button{border:0;background:transparent;color:#8192a7;font-weight:650;font-size:11px;padding:9px}.text-button:hover{color:#164e91}.table-scroll{overflow:auto}.editor-table,.data-table{width:100%;border-collapse:collapse;white-space:nowrap}.editor-table th,.data-table th{text-align:left;font-size:9px;font-weight:850;letter-spacing:1.05px;color:#8798ae;border-bottom:1px solid #e7edf5;padding:15px 8px 13px}.editor-table th:first-child,.editor-table td:first-child,.data-table th:first-child,.data-table td:first-child{padding-left:0}.editor-table td{padding:7px 6px;border-bottom:1px solid #eef2f7}.editor-table input{width:100%;min-width:72px;max-width:160px;padding:11px 9px;font-size:12px;border:1px solid #e3eaf3;background:#fafcff;border-radius:7px;color:#203654}.editor-table input[data-field="id"]{min-width:68px}.remove-btn{border:0;background:#fff2f2;color:#bc6070;border-radius:7px;padding:8px 10px;font-size:15px}.remove-btn:hover{background:#fbe0e4}.editor-actions{display:flex;justify-content:space-between;align-items:center;margin-top:17px;gap:12px}.settings-panel{display:flex;flex-direction:column}.algorithm-options{border:0;padding:0;margin:22px 0 17px;display:grid;gap:8px}.algorithm-card{border:1px solid #e2e9f0;background:#fff;display:flex;align-items:center;gap:12px;border-radius:9px;padding:11px 13px;cursor:pointer;transition:.12s}.algorithm-card:hover{border-color:#b9d2ed}.algorithm-card.selected{background:#f0f7ff;border-color:#7bb8f4;box-shadow:inset 3px 0 0 #2e89e8}.algorithm-card input{position:absolute;opacity:0;width:1px;height:1px}.algorithm-card:focus-within{outline:3px solid #aacfff}.algo-initial{font-size:10px;letter-spacing:.5px;font-weight:850;color:#8ba2ba;border-radius:8px;background:#f3f6fa;padding:9px}.algo-content{display:grid;gap:3px;flex:1}.algo-content strong{font-size:12px}.algo-content small{font-size:10px;color:#8798aa}.radio-indicator{display:block;width:15px;height:15px;border-radius:50%;border:2px solid #bed0e2}.algorithm-card.selected .radio-indicator{border:5px solid #227bdb}.quantum-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 0;border-top:1px solid #e8eef5}.micro{font-size:11px;color:#8b9aab;line-height:1.55;margin:3px 0 0}.quantum-row input{width:82px;padding:10px;border-radius:8px;border:1px solid #d8e3ee;text-align:center;font-weight:750;color:#2d4160}.run-actions{display:flex;gap:9px;margin-top:auto;padding-top:10px}.btn-primary{background:#176edf;color:white;padding:14px 15px;flex:1;display:flex;justify-content:center;gap:17px;align-items:center}.btn-primary:hover{background:#075abe}.btn-secondary{color:#2b537c;background:#ecf3fb;padding:13px 13px}.btn-secondary:hover{background:#e2eefb}
+.error-box{margin-top:17px;padding:15px;border-radius:9px;background:#fff4f2;border:1px solid #ffbcb4;color:#9b2925;font-size:13px}.results{margin-top:28px}.results-title{margin-bottom:17px}.results-title h3{margin:7px 0 3px}.verified{color:#088664;background:#eafaf5;font-size:11px;font-weight:750;padding:8px 12px;border-radius:30px;white-space:nowrap}.verified.bad{color:#b0352d;background:#ffefec}.metric-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-bottom:19px}.metric-card{background:white;border:1px solid #e5ebf3;padding:21px;border-radius:13px;box-shadow:0 5px 18px #24456f06}.metric-card .metric-label{color:#758ca7;font-size:11px;font-weight:750;margin-bottom:15px}.metric-card .metric-value{font-size:30px;font-weight:850;letter-spacing:-1px;color:#203b64}.metric-card .metric-unit{font-size:11px;color:#8398ac;margin-left:7px}.metric-card .metric-marker{height:3px;width:26px;background:#448fe7;border-radius:4px;margin-top:13px}.metric-card:nth-child(2) .metric-marker{background:#26c9a0}.metric-card:nth-child(3) .metric-marker{background:#9679e6}.gantt-panel{margin-bottom:19px}.gantt-scroller{overflow-x:auto;padding:20px 0 12px}.gantt-track{display:flex;align-items:stretch;min-width:max-content;padding-bottom:3px}.gantt-slice{position:relative;display:flex;flex-direction:column;gap:1px;text-align:center;justify-content:center;min-height:77px;border:1px solid #ffffff7c;color:white;border-radius:6px;margin-right:2px;overflow:visible}.gantt-slice .slice-name{font-size:12px;font-weight:850;white-space:nowrap}.gantt-slice .slice-length{font-size:10px;opacity:.88;white-space:nowrap}.gantt-slice .time-start{position:absolute;bottom:-19px;left:0;transform:translateX(-2px);font-size:10px;color:#71859c}.gantt-slice .time-end{position:absolute;bottom:-19px;right:0;transform:translateX(8px);font-size:10px;color:#71859c}.gantt-slice.idle{color:#536b84;border:1px dashed #a8bbd0;background:repeating-linear-gradient(135deg,#eaf0f6,#eaf0f6 9px,#dce6ef 9px,#dce6ef 18px)}.gantt-slice.rr-slice{border-right:3px solid #fff}.legend{display:flex;gap:15px;flex-wrap:wrap;margin-top:24px}.legend-item{display:flex;align-items:center;gap:6px;font-size:10px;color:#647c95}.legend-chip{width:10px;height:10px;border-radius:3px}.data-table th{padding:14px 11px}.data-table td{padding:15px 11px;font-size:12px;font-variant-numeric:tabular-nums;border-bottom:1px solid #eff2f6;color:#354861}.data-table .process-label{font-weight:800;color:#1e4a86}.data-table tfoot td{font-weight:800;background:#f8fbff;color:#1c4d85}.formula-note{font-size:11px;line-height:1.8;color:#758aa3;margin:17px 0 0}.compare-panel{margin-top:19px}.compare-panel .data-table td.best{background:#edf9f4;color:#087b55;font-weight:800}.footer{font-size:11px;color:#8497ae;text-align:center;padding:26px 0 2px}
+@media (max-width:1120px){.app-shell{grid-template-columns:210px minmax(0,1fr)}.sidebar{padding:28px 18px}.sidebar h1{font-size:32px}.config-layout{grid-template-columns:1fr}.run-actions{margin-top:8px}}
+@media (max-width:740px){.app-shell{display:block}.sidebar{min-height:0;padding:16px 18px}.brand{font-size:16px}.sidebar-main,.sidebar-foot{display:none}.workspace{padding:20px 13px}.topbar{display:block}.top-pill{display:inline-block;margin-top:12px}.topbar h2{font-size:24px}.panel{padding:17px;border-radius:12px}.metric-cards{gap:8px}.metric-card{padding:13px 9px}.metric-card .metric-label{font-size:10px;min-height:25px}.metric-card .metric-value{font-size:22px}.metric-card .metric-unit{display:block;margin:1px 0}.verified{font-size:10px}.run-actions{flex-direction:column}.panel-heading h3{font-size:17px}}
+@media print{.sidebar,.editor-actions,.preset-toolbar,.run-actions,.top-pill,.footer{display:none}.app-shell{display:block}.workspace{max-width:none}.panel,.metric-card{box-shadow:none}.gantt-scroller{overflow:visible}.gantt-track{transform:scale(.65);transform-origin:left top}}
+
+/* The decision inspector supplements the Gantt chart with testable scheduling rationale. */
+.decisions-panel{margin-top:19px}.decisions-table{white-space:normal}.decisions-table td{vertical-align:top;line-height:1.55}.decisions-table td:nth-child(1){font-weight:800;color:#1e4a86;width:65px}.decisions-table td:nth-child(2){width:85px}.decisions-table td:nth-child(3){min-width:130px;font-variant-numeric:tabular-nums;color:#425d7b;font-weight:650}.decisions-table td:nth-child(4){min-width:250px;max-width:460px}.decisions-panel .small-tag{white-space:nowrap}
+
+</style>
+
+
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Information">
+      <div class="brand"><span class="brand-symbol" aria-hidden="true">▦</span><span>OS<span class="brand-highlight">/</span>LAB</span></div>
+      <div class="sidebar-main">
+        <div class="sidebar-badge">INTERACTIVE SIMULATOR</div>
+        <h1>CPU<br><span>Scheduling</span><br>Lab.</h1>
+        <p class="sidebar-description">Understand how processes share a single CPU - one scheduling decision at a time.</p>
+        <div class="sidebar-divider"></div>
+        <p class="sidebar-section">SUPPORTED POLICIES</p>
+        <ul class="policy-list">
+          <li><span class="policy-dot d-blue"></span>First-Come, First-Served</li>
+          <li><span class="policy-dot d-green"></span>Shortest Job First</li>
+          <li><span class="policy-dot d-purple"></span>Shortest Remaining Time</li>
+          <li><span class="policy-dot d-orange"></span>Round Robin</li>
+        </ul>
+        <div class="tip"><strong>How to use</strong><span>Load a workload, edit processes, select a policy and run the simulation. Compare the chart and metrics.</span></div>
+      </div>
+      <div class="sidebar-foot">CSE513 • Assignment 1<br>Single CPU · No I/O · Zero context-switch overhead</div>
+    </aside>
+    <main class="workspace" id="main">
+      <header class="topbar"><div><div class="eyebrow">OPERATING SYSTEMS / SIMULATION</div><h2>Scheduling workspace</h2><p class="muted">Configure your workload and inspect how the CPU is allocated.</p></div><div class="top-pill"><span class="online-dot"></span>Runs entirely in your browser</div></header>
+      <div class="config-layout">
+        <section class="panel" aria-labelledby="process-title">
+          <div class="panel-heading"><div><div class="section-index">01 · PROCESS INPUT</div><h3 id="process-title">Workload configuration</h3></div><span id="process-count" class="small-tag">4 processes</span></div>
+          <div class="preset-toolbar"><label for="preset">Load an example</label><div class="preset-controls"><select id="preset" aria-label="Select example workload"><option value="A">Workload A · Assignment</option><option value="B">Workload B · Assignment</option><option value="IDLE">Test 1 · CPU idle</option><option value="TIE">Test 2 · Simultaneous arrivals</option><option value="PREEMPT">Test 3 · SRTF preemption</option></select><button type="button" class="btn btn-outline" id="load-preset">Load</button></div></div>
+          <div class="table-scroll"><table class="editor-table" aria-label="Editable process list"><thead><tr><th>PROCESS ID</th><th>ARRIVAL</th><th>CPU BURST</th><th><span class="sr-only">Delete process</span></th></tr></thead><tbody id="process-rows"></tbody></table></div>
+          <div class="editor-actions"><button type="button" class="btn btn-subtle" id="add-process"><span aria-hidden="true">＋</span> Add process</button><button type="button" class="text-button" id="reset">Reset to A</button></div>
+        </section>
+        <section class="panel settings-panel" aria-labelledby="algo-title"><div class="panel-heading"><div><div class="section-index">02 · SCHEDULING POLICY</div><h3 id="algo-title">Choose an algorithm</h3></div></div>
+          <fieldset class="algorithm-options"><legend class="sr-only">Algorithm</legend>
+            <label class="algorithm-card selected"><input type="radio" name="algorithm" value="FCFS" checked><span class="algo-initial">01</span><span class="algo-content"><strong>FCFS</strong><small>First come, first served</small></span><span class="radio-indicator" aria-hidden="true"></span></label>
+            <label class="algorithm-card"><input type="radio" name="algorithm" value="SJF"><span class="algo-initial">02</span><span class="algo-content"><strong>SJF</strong><small>Shortest job, non-preemptive</small></span><span class="radio-indicator" aria-hidden="true"></span></label>
+            <label class="algorithm-card"><input type="radio" name="algorithm" value="SRTF"><span class="algo-initial">03</span><span class="algo-content"><strong>SRTF</strong><small>Shortest remaining time</small></span><span class="radio-indicator" aria-hidden="true"></span></label>
+            <label class="algorithm-card"><input type="radio" name="algorithm" value="RR"><span class="algo-initial">04</span><span class="algo-content"><strong>Round Robin</strong><small>FIFO queue, fixed time slice</small></span><span class="radio-indicator" aria-hidden="true"></span></label>
+          </fieldset>
+          <div class="quantum-row"><div><label for="quantum">Time quantum</label><p class="micro">Used by Round Robin only</p></div><input id="quantum" type="number" min="1" step="1" value="2" aria-describedby="quantum-help"><span id="quantum-help" class="sr-only">A positive integer required for Round Robin</span></div>
+          <div class="run-actions"><button type="button" class="btn btn-primary" id="run">Run simulation <span aria-hidden="true">→</span></button><button type="button" class="btn btn-secondary" id="compare">Compare all four</button></div>
+        </section>
+      </div>
+      <div id="error" class="error-box" role="alert" hidden></div>
+      <section class="results" id="results" aria-live="polite" aria-atomic="false">
+        <div class="results-title"><div><div class="section-index">03 · SIMULATION OUTPUT</div><h3>Scheduling results</h3><p class="muted" id="summary-subtitle">Workload A • FCFS</p></div><span id="verification" class="verified">✓ Invariants passed</span></div>
+        <div class="metric-cards" id="metric-cards"></div>
+        <section class="panel gantt-panel" aria-labelledby="gantt-title"><div class="panel-heading"><div><h4 id="gantt-title">CPU execution timeline</h4><p class="micro">Intervals are [start, end); each colored block shows an execution slice.</p></div><span id="gantt-caption" class="small-tag">Gantt chart</span></div><div id="gantt" class="gantt-scroller"></div><div class="legend" id="legend"></div></section>
+        <section class="panel" aria-labelledby="table-title"><div class="panel-heading"><div><h4 id="table-title">Per-process performance</h4><p class="micro">Time units; rows retain the original input order.</p></div><button type="button" class="btn btn-outline btn-small" id="export-csv">Export CSV</button></div><div class="table-scroll"><table class="data-table"><thead><tr><th>PROCESS</th><th>ARRIVAL</th><th>BURST</th><th>FIRST START</th><th>COMPLETION</th><th>TURNAROUND</th><th>WAITING</th><th>RESPONSE</th></tr></thead><tbody id="result-rows"></tbody></table></div><p class="formula-note">Turnaround = Completion − Arrival &nbsp;·&nbsp; Waiting = Turnaround − CPU burst &nbsp;·&nbsp; Response = First start − Arrival</p></section>
+        <section class="panel decisions-panel" aria-labelledby="decisions-title">
+          <div class="panel-heading"><div><h4 id="decisions-title">Why did the CPU choose this process?</h4><p class="micro">A transparent, chronological scheduling decision log. Ready lists are shown in selection order (FIFO order for RR).</p></div><span class="small-tag" id="decision-count">0 decisions</span></div>
+          <div class="table-scroll"><table class="data-table decisions-table"><thead><tr><th>TIME</th><th>CPU</th><th>READY CANDIDATES</th><th>DECISION EXPLANATION</th></tr></thead><tbody id="decision-rows"></tbody></table></div>
+        </section>
+        <section class="panel compare-panel" id="comparison-section" hidden aria-labelledby="comparison-title"><div class="panel-heading"><div><h4 id="comparison-title">All-algorithm comparison</h4><p class="micro">Same workload; Round Robin uses the quantum above.</p></div></div><div id="comparison" class="table-scroll"></div></section>
+      </section>
+      <footer class="footer">CSE513 • CPU Scheduling Simulator &nbsp;|&nbsp; FCFS · SJF · SRTF · RR &nbsp;|&nbsp; No backend, database, or login required</footer>
+    </main>
+  </div>
+<script>
+/*
+ * CSE513 Assignment 1 - deterministic single-CPU scheduling simulation.
+ * No dependencies. Usable in a browser (window.Scheduler) or Node (require).
+ * All intervals are [start, end), so a slice from 2 to 5 uses 3 CPU units.
+ */
+(function (root, factory) {
+  const library = factory();
+  if (typeof module === 'object' && module.exports) module.exports = library;
+  if (root) root.Scheduler = library;
+})(typeof window !== 'undefined' ? window : null, function () {
+  'use strict';
+
+  const PRESETS = Object.freeze({
+    A: [
+      { id: 'P1', arrival: 0, burst: 8 },
+      { id: 'P2', arrival: 1, burst: 4 },
+      { id: 'P3', arrival: 2, burst: 2 },
+      { id: 'P4', arrival: 4, burst: 1 }
+    ],
+    B: [
+      { id: 'P1', arrival: 2, burst: 3 },
+      { id: 'P2', arrival: 2, burst: 1 },
+      { id: 'P3', arrival: 8, burst: 2 },
+      { id: 'P4', arrival: 9, burst: 1 }
+    ],
+    IDLE: [
+      { id: 'P1', arrival: 3, burst: 2 },
+      { id: 'P2', arrival: 8, burst: 1 }
+    ],
+    TIE: [
+      { id: 'P1', arrival: 0, burst: 3 },
+      { id: 'P2', arrival: 0, burst: 3 },
+      { id: 'P3', arrival: 1, burst: 1 }
+    ],
+    PREEMPT: [
+      { id: 'P1', arrival: 0, burst: 7 },
+      { id: 'P2', arrival: 2, burst: 2 },
+      { id: 'P3', arrival: 3, burst: 1 }
+    ]
+  });
+
+  function validate(processes, algorithm = 'FCFS', quantum = 2) {
+    if (!Array.isArray(processes) || processes.length === 0) {
+      throw new Error('Add at least one process before running the simulation.');
+    }
+    if (!['FCFS', 'SJF', 'SRTF', 'RR'].includes(algorithm)) {
+      throw new Error('Choose FCFS, SJF, SRTF or RR.');
+    }
+    if (algorithm === 'RR' && (!Number.isSafeInteger(Number(quantum)) || Number(quantum) < 1)) {
+      throw new Error('Round Robin quantum must be a positive integer (1, 2, 3, ...).');
+    }
+
+    const ids = new Set();
+    return processes.map((p, index) => {
+      if (p === null || typeof p !== 'object') {
+        throw new Error(`Process at row ${index + 1} is invalid.`);
+      }
+      const id = String(p.id == null ? '' : p.id).trim();
+      if (!id) throw new Error(`Process ${index + 1}: ID cannot be empty.`);
+      if (ids.has(id)) throw new Error(`Process ID "${id}" is duplicated. IDs must be unique.`);
+      ids.add(id);
+      if (p.arrival === '' || p.arrival == null || !Number.isSafeInteger(Number(p.arrival)) || Number(p.arrival) < 0) {
+        throw new Error(`${id}: arrival time must be a nonnegative integer (0, 1, 2, ...).`);
+      }
+      if (p.burst === '' || p.burst == null || !Number.isSafeInteger(Number(p.burst)) || Number(p.burst) < 1) {
+        throw new Error(`${id}: CPU burst must be a positive integer (1, 2, 3, ...).`);
+      }
+      return {
+        id,
+        arrival: Number(p.arrival),
+        burst: Number(p.burst),
+        remaining: Number(p.burst),
+        index,
+        firstStart: null,
+        completion: null
+      };
+    });
+  }
+
+  function run(processes, algorithm = 'FCFS', quantum = 2) {
+    const tasks = validate(processes, algorithm, quantum);
+    const segments = [];
+    const decisions = [];
+    let t = 0;
+    let completed = 0;
+    const byArrival = [...tasks].sort((a, b) => a.arrival - b.arrival || a.index - b.index);
+
+    function addSegment(id, start, end, forceBoundary = false) {
+      if (end <= start) return;
+      const last = segments[segments.length - 1];
+      // Consecutive RR quanta MUST remain separate, even for the same task.
+      if (!forceBoundary && last && last.id === id && last.end === start && !last.quantumBoundary) {
+        last.end = end;
+      } else {
+        segments.push({ id, start, end, quantumBoundary: Boolean(forceBoundary) });
+      }
+    }
+    function idleTo(time) {
+      if (time > t) {
+        decisions.push({ time: t, chosen: null, ready: [], explanation: `No process is ready. CPU stays idle until time ${time}.` });
+        addSegment(null, t, time);
+      }
+      t = time;
+    }
+    function execute(task, duration, forceBoundary = false) {
+      if (task.firstStart === null) task.firstStart = t;
+      addSegment(task.id, t, t + duration, forceBoundary);
+      t += duration;
+      task.remaining -= duration;
+      if (task.remaining === 0) {
+        task.completion = t;
+        completed += 1;
+      }
+    }
+
+    if (algorithm === 'FCFS' || algorithm === 'SJF') {
+      while (completed < tasks.length) {
+        const ready = tasks.filter(p => p.remaining > 0 && p.arrival <= t);
+        if (!ready.length) {
+          idleTo(Math.min(...tasks.filter(p => p.remaining > 0).map(p => p.arrival)));
+          continue;
+        }
+        ready.sort((a, b) => algorithm === 'SJF'
+          ? a.burst - b.burst || a.arrival - b.arrival || a.index - b.index
+          : a.arrival - b.arrival || a.index - b.index);
+        const chosen = ready[0];
+        decisions.push({
+          time: t,
+          chosen: chosen.id,
+          ready: ready.map(p => p.id),
+          explanation: algorithm === 'FCFS'
+            ? `FCFS chooses the earliest arrival (${chosen.arrival}); equal arrivals use input order. It runs to completion.`
+            : `Non-preemptive SJF chooses the shortest ready burst (${chosen.burst}); ties use arrival and input order.`
+        });
+        execute(chosen, chosen.remaining);
+      }
+    } else if (algorithm === 'SRTF') {
+      let current = null;
+      while (completed < tasks.length) {
+        const ready = tasks.filter(p => p.remaining > 0 && p.arrival <= t);
+        if (!ready.length) {
+          idleTo(Math.min(...tasks.filter(p => p.remaining > 0).map(p => p.arrival)));
+          current = null;
+          continue;
+        }
+        ready.sort((a, b) => a.remaining - b.remaining || a.arrival - b.arrival || a.index - b.index);
+        // A tie never preempts the current task, even if another task arrived earlier.
+        const previous = current;
+        const chosenByRanking = ready[0];
+        const shouldSwitch = !current || current.remaining === 0 || !ready.includes(current) || chosenByRanking.remaining < current.remaining;
+        if (shouldSwitch) current = chosenByRanking;
+        let explanation;
+        if (!previous || previous.remaining === 0) {
+          explanation = `Choose shortest remaining time (${current.remaining}); tie-break by arrival and input order.`;
+        } else if (shouldSwitch) {
+          explanation = `${current.id} has ${current.remaining} units remaining, strictly less than ${previous.id}'s ${previous.remaining}; preempt.`;
+        } else if (ready.some(p => p !== current && p.remaining === current.remaining)) {
+          explanation = `Equal remaining time (${current.remaining}); retain running ${current.id} without preemption.`;
+        } else {
+          explanation = `${current.id} still has the shortest remaining time (${current.remaining}); keep running.`;
+        }
+        decisions.push({ time: t, chosen: current.id, ready: ready.map(p => p.id), explanation });
+        const nextArrival = byArrival.find(p => p.arrival > t);
+        const untilArrival = nextArrival ? nextArrival.arrival - t : Infinity;
+        execute(current, Math.min(current.remaining, untilArrival));
+        if (current.remaining === 0) current = null;
+      }
+    } else {
+      let arrivalIndex = 0;
+      const queue = [];
+      function collectArrivalsThrough(time) {
+        while (arrivalIndex < byArrival.length && byArrival[arrivalIndex].arrival <= time) {
+          queue.push(byArrival[arrivalIndex++]);
+        }
+      }
+      while (completed < tasks.length) {
+        collectArrivalsThrough(t);
+        if (!queue.length) {
+          idleTo(byArrival[arrivalIndex].arrival);
+          collectArrivalsThrough(t);
+        }
+        const readyOrder = queue.map(p => p.id);
+        const current = queue.shift();
+        decisions.push({
+          time: t,
+          chosen: current.id,
+          ready: readyOrder,
+          explanation: `Round Robin dispatches the FIFO queue head for up to ${Number(quantum)} time units. Arrivals at a slice boundary precede requeueing.`
+        });
+        execute(current, Math.min(Number(quantum), current.remaining), true);
+        // IMPORTANT: arrivals at this exact boundary precede the unfinished task.
+        collectArrivalsThrough(t);
+        if (current.remaining > 0) queue.push(current);
+      }
+    }
+
+    const table = tasks.map(p => {
+      const turnaround = p.completion - p.arrival;
+      const waiting = turnaround - p.burst;
+      const response = p.firstStart - p.arrival;
+      return {
+        id: p.id,
+        arrival: p.arrival,
+        burst: p.burst,
+        firstStart: p.firstStart,
+        completion: p.completion,
+        turnaround,
+        waiting,
+        response
+      };
+    });
+    const avg = key => table.reduce((sum, r) => sum + r[key], 0) / table.length;
+    return {
+      algorithm,
+      quantum: algorithm === 'RR' ? Number(quantum) : null,
+      segments,
+      decisions,
+      table,
+      averages: {
+        turnaround: avg('turnaround'),
+        waiting: avg('waiting'),
+        response: avg('response')
+      },
+      finishTime: t
+    };
+  }
+
+  function verify(result) {
+    const errors = [];
+    const rows = new Map(result.table.map(p => [p.id, p]));
+    const service = new Map(result.table.map(p => [p.id, 0]));
+    const timeline = [...result.segments];
+    for (let i = 0; i < timeline.length; i++) {
+      const s = timeline[i];
+      if (!(s.end > s.start)) errors.push('Nonpositive interval.');
+      if (i && s.start !== timeline[i - 1].end) errors.push('Gap/overlap between segments.');
+      if (s.id === null) {
+        if (result.table.some(p => p.arrival <= s.start && p.completion > s.start)) {
+          errors.push(`Idle while a process is ready at ${s.start}.`);
+        }
+        if (result.table.some(p => p.arrival > s.start && p.arrival < s.end)) {
+          errors.push(`Idle crosses a new arrival at ${s.start}-${s.end}.`);
+        }
+        continue;
+      }
+      const p = rows.get(s.id);
+      if (!p) { errors.push(`Unknown process ${s.id}.`); continue; }
+      if (s.start < p.arrival) errors.push(`${s.id} runs before arrival.`);
+      service.set(s.id, service.get(s.id) + s.end - s.start);
+    }
+    for (const p of result.table) {
+      if (service.get(p.id) !== p.burst) errors.push(`${p.id} executed ${service.get(p.id)} units, expected ${p.burst}.`);
+      if (p.waiting < 0 || p.response < 0) errors.push(`${p.id} has a negative metric.`);
+      if (p.turnaround !== p.completion - p.arrival || p.waiting !== p.turnaround - p.burst || p.response !== p.firstStart - p.arrival) {
+        errors.push(`${p.id} metric equation failed.`);
+      }
+      const own = timeline.filter(s => s.id === p.id);
+      if (!own.length || own[0].start !== p.firstStart || own[own.length - 1].end !== p.completion) {
+        errors.push(`${p.id} first-start/completion timestamp mismatch.`);
+      }
+    }
+    if (timeline.length && timeline[0].start !== 0) errors.push('Timeline must start at zero.');
+    return { ok: !errors.length, errors };
+  }
+
+  return { PRESETS, validate, run, verify };
+});
+
+</script><script>
+/* Presentation layer only. All scheduling decisions live in scheduler.js. */
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const lib = window.Scheduler;
+  let processes = lib.PRESETS.A.map(p => ({ ...p }));
+  let currentResult = null;
+  let comparedResults = null;
+  const colors = ['#3078dc','#07a889','#8c6ee6','#e68a40','#dd5779','#167ab1','#5d88af','#a266cc','#259c9b','#bf783a'];
+
+  function node(tag, cls, value) {
+    const el = document.createElement(tag);
+    if (cls) el.className = cls;
+    if (value !== undefined) el.textContent = String(value);
+    return el;
+  }
+  function selectedAlgorithm() { return document.querySelector('input[name="algorithm"]:checked').value; }
+  function showError(message) { $('error').textContent = message; $('error').hidden = !message; }
+  function renderEditor() {
+    const tbody = $('process-rows');
+    tbody.replaceChildren();
+    processes.forEach((p, i) => {
+      const tr = node('tr');
+      for (const [field, type] of [['id','text'],['arrival','number'],['burst','number']]) {
+        const td = node('td');
+        const inp = node('input');
+        inp.type = type;
+        inp.value = p[field];
+        inp.dataset.field = field;
+        inp.dataset.index = String(i);
+        inp.setAttribute('aria-label', `Process ${i + 1} ${field}`);
+        if (type === 'number') { inp.min = field === 'arrival' ? '0' : '1'; inp.step = '1'; }
+        inp.addEventListener('input', () => { processes[i][field] = inp.value; showError(''); });
+        td.append(inp); tr.append(td);
+      }
+      const removeCell = node('td');
+      const remove = node('button','remove-btn','×');
+      remove.type = 'button';
+      remove.title = `Delete process ${i + 1}`;
+      remove.setAttribute('aria-label', `Delete process ${i + 1}`);
+      remove.addEventListener('click', () => { processes.splice(i, 1); renderEditor(); showError(''); });
+      removeCell.append(remove); tr.append(removeCell);
+      tbody.append(tr);
+    });
+    $('process-count').textContent = `${processes.length} process${processes.length === 1 ? '' : 'es'}`;
+  }
+  function showPreset(key) {
+    processes = lib.PRESETS[key].map(p => ({ ...p }));
+    $('preset').value = key;
+    renderEditor(); showError('');
+  }
+  function updateAlgorithms() {
+    document.querySelectorAll('.algorithm-card').forEach(el => {
+      el.classList.toggle('selected', el.querySelector('input').checked);
+    });
+  }
+  function rounded(n) { return n.toFixed(2); }
+  function colorFor(id) {
+    const index = processes.findIndex(p => String(p.id).trim() === id);
+    return colors[(index >= 0 ? index : 0) % colors.length];
+  }
+  function makeMetric(title, value) {
+    const card = node('div','metric-card');
+    card.append(node('div','metric-label',title));
+    const line = node('div');
+    line.append(node('span','metric-value',rounded(value)));
+    line.append(node('span','metric-unit','time units'));
+    card.append(line, node('div','metric-marker'));
+    return card;
+  }
+  function renderGantt(result) {
+    const outer = $('gantt'); outer.replaceChildren();
+    const track = node('div','gantt-track');
+    for (const seg of result.segments) {
+      const length = seg.end - seg.start;
+      const block = node('div','gantt-slice' + (seg.id === null ? ' idle' : '') + (seg.quantumBoundary ? ' rr-slice' : ''));
+      // Keep one-unit blocks legible; long segments remain visually longer.
+      block.style.width = `${Math.max(78,Math.min(1300,length*56))}px`;
+      if (seg.id !== null) block.style.backgroundColor = colorFor(seg.id);
+      block.title = `${seg.id ?? 'IDLE'}: [${seg.start}, ${seg.end}) = ${length} CPU unit${length===1?'':'s'}`;
+      block.append(node('span','slice-name',seg.id ?? 'IDLE'),node('span','slice-length',`${length} unit${length===1?'':'s'}`),node('span','time-start',seg.start),node('span','time-end',seg.end));
+      track.append(block);
+    }
+    outer.append(track);
+    $('gantt-caption').textContent = `${result.segments.length} interval${result.segments.length === 1 ? '' : 's'}`;
+    const legend = $('legend'); legend.replaceChildren();
+    for (const row of result.table) {
+      const item = node('span','legend-item');
+      const chip = node('span','legend-chip'); chip.style.backgroundColor = colorFor(row.id);
+      item.append(chip,node('span','',row.id)); legend.append(item);
+    }
+    if (result.segments.some(s=>s.id===null)) {
+      const item=node('span','legend-item');const chip=node('span','legend-chip');chip.style.backgroundColor='#d6e0e9';item.append(chip,node('span','','CPU idle'));legend.append(item);
+    }
+  }
+  function renderTable(result) {
+    const body = $('result-rows'); body.replaceChildren();
+    for (const p of result.table) {
+      const tr = node('tr');
+      ['id','arrival','burst','firstStart','completion','turnaround','waiting','response'].forEach(key => tr.append(node('td',key==='id'?'process-label':'',p[key])));
+      body.append(tr);
+    }
+  }
+  function renderDecisions(result) {
+    const body = $('decision-rows'); body.replaceChildren();
+    for (const choice of result.decisions) {
+      const tr = node('tr');
+      tr.append(node('td','decision-time',choice.time));
+      tr.append(node('td','process-label',choice.chosen ?? 'IDLE'));
+      tr.append(node('td','',choice.ready.length ? choice.ready.join(' → ') : '—'));
+      tr.append(node('td','decision-explanation',choice.explanation));
+      body.append(tr);
+    }
+    $('decision-count').textContent = `${result.decisions.length} decision${result.decisions.length === 1 ? '' : 's'}`;
+  }
+  function renderComparison(results) {
+    const holder = $('comparison'); holder.replaceChildren();
+    const table=node('table','data-table');
+    const thead=node('thead'); const headRow=node('tr');
+    ['ALGORITHM','AVG. TURNAROUND','AVG. WAITING','AVG. RESPONSE'].forEach(k=>headRow.append(node('th','',k)));
+    thead.append(headRow);table.append(thead);
+    const body=node('tbody');
+    const mins = ['turnaround','waiting','response'].map(k => Math.min(...results.map(r=>r.averages[k])));
+    results.forEach(r=>{
+      const tr=node('tr');tr.append(node('td','process-label',r.algorithm==='RR'?`RR (q=${r.quantum})`:r.algorithm));
+      ['turnaround','waiting','response'].forEach((k,i)=>tr.append(node('td',Math.abs(r.averages[k]-mins[i])<1e-9?'best':'',rounded(r.averages[k]))));
+      body.append(tr);
+    }); table.append(body); holder.append(table);
+    $('comparison-section').hidden=false;
+  }
+  function renderResult(result) {
+    currentResult=result;
+    $('metric-cards').replaceChildren(makeMetric('AVG. TURNAROUND',result.averages.turnaround),makeMetric('AVG. WAITING',result.averages.waiting),makeMetric('AVG. RESPONSE',result.averages.response));
+    renderGantt(result);renderTable(result);renderDecisions(result);
+    $('summary-subtitle').textContent=`${processes.length} processes • ${result.algorithm}${result.algorithm==='RR'?` (quantum ${result.quantum})`:''} • completion time ${result.finishTime}`;
+    const verification=lib.verify(result);
+    $('verification').textContent=verification.ok?'✓ Invariants passed':`✕ ${verification.errors.length} verification issue(s)`;
+    $('verification').classList.toggle('bad',!verification.ok);
+  }
+  function simulate(compare) {
+    try {
+      showError('');
+      const quantum=$('quantum').value;
+      const algorithm=selectedAlgorithm();
+      const result=lib.run(processes,algorithm,quantum);
+      renderResult(result);
+      if (compare) {
+        comparedResults=['FCFS','SJF','SRTF','RR'].map(alg=>lib.run(processes,alg,quantum));
+        renderComparison(comparedResults);
+      } else {
+        $('comparison-section').hidden=true;comparedResults=null;
+      }
+      $('results').scrollIntoView({behavior:'smooth',block:'start'});
+    } catch (e) {showError(e.message);$('error').scrollIntoView({behavior:'smooth',block:'nearest'});}
+  }
+  function csvEscape(s) { return `"${String(s).replaceAll('"','""')}"`; }
+  function exportCSV() {
+    if (!currentResult) return;
+    const columns=['id','arrival','burst','firstStart','completion','turnaround','waiting','response'];
+    const csv=[columns.join(','),...currentResult.table.map(row=>columns.map(k=>csvEscape(row[k])).join(','))].join('\r\n');
+    const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+    const anchor=document.createElement('a');anchor.href=url;anchor.download=`CSE513_${currentResult.algorithm}_results.csv`;anchor.click();URL.revokeObjectURL(url);
+  }
+  $('load-preset').addEventListener('click',()=>{showPreset($('preset').value);simulate(false);});
+  $('reset').addEventListener('click',()=>{showPreset('A');simulate(false);});
+  $('add-process').addEventListener('click',()=>{
+    let n=1;while(processes.some(p=>String(p.id).trim()===`P${n}`))n++;
+    processes.push({id:`P${n}`,arrival:0,burst:1});renderEditor();showError('');
+  });
+  document.querySelectorAll('input[name="algorithm"]').forEach(el=>el.addEventListener('change',updateAlgorithms));
+  $('run').addEventListener('click',()=>simulate(false));
+  $('compare').addEventListener('click',()=>simulate(true));
+  $('export-csv').addEventListener('click',exportCSV);
+  renderEditor();updateAlgorithms();
+  try { renderResult(lib.run(processes,'FCFS',2)); } catch(e) { showError(e.message); }
+})();
+
+</script>
+</body>
+</html>
